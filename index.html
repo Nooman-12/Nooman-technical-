@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TCom 301 — Technical Communication</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Bricolage+Grotesque:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN MODAL -->
+<div class="overlay" id="loginOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-header-icon">🎓</div>
+      <div class="modal-title">Welcome Back!</div>
+      <div class="modal-sub">Sign in to access your course</div>
+    </div>
+    <div class="modal-body">
+      <div class="role-tabs">
+        <button class="role-tab active" id="roleStudent" onclick="setRole('student')">👤 Student</button>
+        <button class="role-tab" id="roleTeacher" onclick="setRole('teacher')">👨‍🏫 Teacher</button>
+      </div>
+      <div id="studentFields">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="loginEmail" placeholder="your@email.com">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="loginPass" placeholder="Enter your password">
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:0.4rem;" id="passHint">
+          Student password: <strong>student123</strong>
+        </div>
+      </div>
+      <button class="btn-modal" id="loginSubmitBtn" onclick="doLogin()">🚀 Sign In</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="instructor-topbar">
+  <img class="inst-top-photo" src="instructor.jpg" alt="Nooman Zadran" onerror="this.style.display='none'">
+  <div class="inst-top-info">
+    <div class="inst-top-name">Nooman Zadran</div>
+    <div class="inst-top-role">Technical Communication · Open University · LAPIS Technology Officer</div>
+  </div>
+  <div class="inst-top-divider"></div>
+  <span class="inst-top-badge">👨‍🏫 Your Instructor</span>
+</div>
+
+<nav>
+  <div class="nav-logo" onclick="showView('home')">
+    <div class="logo-icon">✍️</div>
+    TCom<span>301</span>
+  </div>
+  <div class="nav-center">
+    <button class="nav-link active" onclick="showView('home');setActiveNav(this)">🏠 Home</button>
+    <button class="nav-link" onclick="showView('assignments');setActiveNav(this)">📝 Assignments</button>
+    <button class="nav-link" onclick="showView('grades');setActiveNav(this)">📊 Grades</button>
+    <button class="nav-link" onclick="showView('materials');setActiveNav(this)">📚 Materials</button>
+  </div>
+  <div class="nav-right">
+    <button class="btn-login" id="loginBtn" onclick="openModal()">Sign In</button>
+    <div id="userChip" style="display:none;" class="user-chip" onclick="showView('dashboard')">
+      <div class="user-avatar" id="chipAvatar">U</div>
+      <span id="chipName">User</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HOME VIEW ============ -->
+<div class="view active" id="view-home">
+  <div class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-badge">⭐ Bachelor of Computer Science · Spring 2026</div>
+        <h1>Master <span class="highlight">Technical<br>Communication</span><br>Like a Pro</h1>
+        <p class="hero-desc">Learn to write clear technical reports, professional emails, API docs, and presentations that impress clients, colleagues, and industry leaders.</p>
+        <div class="hero-stats-row">
+          <div class="hero-stat">
+            <div class="hero-stat-num">15<span class="unit"> students</span></div>
+            <div class="hero-stat-label">Enrolled this semester</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num" id="heroAssignCount">—<span class="unit"> tasks</span></div>
+            <div class="hero-stat-label">Assignments total</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">16<span class="unit"> wks</span></div>
+            <div class="hero-stat-label">Course duration</div>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn-hero-primary" onclick="showView('assignments');setActiveNav(document.querySelectorAll('.nav-link')[1])">📝 View Assignments</button>
+          <button class="btn-hero-outline" onclick="showView('materials');setActiveNav(document.querySelectorAll('.nav-link')[3])">📚 Course Materials</button>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-top">
+          <div class="hero-card-icon">✍️</div>
+          <div class="hero-card-title">TCom 301 Portal</div>
+          <div class="hero-card-sub">Live data from database</div>
+        </div>
+        <div class="hero-card-body">
+          <div class="hero-card-row"><span class="label">📝 Assignments</span><span class="val" id="cardAssignCount">Loading...</span></div>
+          <div class="hero-card-row"><span class="label">👥 Students</span><span class="val">15 Enrolled</span></div>
+          <div class="hero-card-row"><span class="label">⏰ Next Due</span><span class="hero-card-pill pill-red" id="cardNextDue">—</span></div>
+          <div class="hero-card-row"><span class="label">🏆 Your Grade</span><span class="hero-card-pill pill-green" id="cardGrade">Sign in</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANNOUNCEMENTS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title"><span class="icon">📢</span> Announcements</div>
+    </div>
+    <div class="announce-grid">
+      <div class="announce-card urgent">
+        <div class="announce-emoji red">🔥</div>
+        <div class="announce-content">
+          <div class="announce-title">Assignment 3 Due This Friday! <span class="hero-card-pill pill-red">Urgent</span></div>
+          <div class="announce-body">Technical Report draft must be submitted by 11:59 PM Friday. Late submissions lose 10% per day. Follow the IEEE format from Materials.</div>
+          <div class="announce-date">📅 February 18, 2026</div>
+        </div>
+      </div>
+      <div class="announce-card success">
+        <div class="announce-emoji green">🎉</div>
+        <div class="announce-content">
+          <div class="announce-title">Midterm Grades Now Posted <span class="hero-card-pill pill-green">New</span></div>
+          <div class="announce-body">Check your grades in the Grades tab. Overall class performance was strong! Office hours: Mon & Wed 2–4 PM in Room CS-204.</div>
+          <div class="announce-date">📅 February 15, 2026</div>
+        </div>
+      </div>
+      <div class="announce-card info">
+        <div class="announce-emoji blue">🎤</div>
+        <div class="announce-content">
+          <div class="announce-title">Guest Lecture — Industry Technical Writing</div>
+          <div class="announce-body">Next Tuesday we have a guest speaker from a leading software firm. Attendance is mandatory. Bring your questions!</div>
+          <div class="announce-date">📅 February 10, 2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ASSIGNMENTS VIEW ============ -->
+<div class="view" id="view-assignments">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title"><span class="icon">📝</span> Assignments</div>
+      <span class="hero-card-pill pill-purple" id="assignCount">Loading...</span>
+    </div>
+    <div class="assign-grid" id="assignGrid">
+      <div class="loading-state">⏳ Loading assignments...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ GRADES VIEW ============ -->
+<div class="view" id="view-grades">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title"><span class="icon">📊</span> My Grades</div>
+    </div>
+    <div id="gradesContent">
+      <div class="empty-state"><div class="empty-icon">🔒</div><div class="empty-title">Sign in to view your grades</div><button class="btn-modal" style="max-width:180px;margin:1rem auto 0;" onclick="openModal()">Sign In</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MATERIALS VIEW ============ -->
+<div class="view" id="view-materials">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title"><span class="icon">📚</span> Course Materials</div>
+    </div>
+    <div class="materials-grid">
+      <div class="material-card"><div class="mat-icon" style="background:#ede9fe;">📋</div><div class="mat-type" style="color:var(--primary);">PDF · Syllabus</div><div class="mat-name">Course Outline & Learning Objectives</div><div class="mat-meta">Updated Jan 2026 · 12 pages</div><button class="mat-download">⬇ Download</button></div>
+      <div class="material-card"><div class="mat-icon" style="background:#fef3c7;">📐</div><div class="mat-type" style="color:#d97706;">Guide · Formatting</div><div class="mat-name">IEEE Technical Report Format Standards</div><div class="mat-meta">Essential Reference · 8 pages</div><button class="mat-download">⬇ Download</button></div>
+      <div class="material-card"><div class="mat-icon" style="background:#dbeafe;">📊</div><div class="mat-type" style="color:var(--info);">Slides · Week 1–4</div><div class="mat-name">Introduction to Technical Communication</div><div class="mat-meta">48 slides · 5.2 MB</div><button class="mat-download">⬇ Download</button></div>
+      <div class="material-card"><div class="mat-icon" style="background:#d1fae5;">✍️</div><div class="mat-type" style="color:var(--success);">Guide · Writing</div><div class="mat-name">Professional Email & Memo Writing</div><div class="mat-meta">With examples · 15 pages</div><button class="mat-download">⬇ Download</button></div>
+      <div class="material-card"><div class="mat-icon" style="background:#ffe4e6;">📈</div><div class="mat-type" style="color:var(--danger);">Slides · Week 5–8</div><div class="mat-name">Data Visualization & Infographics</div><div class="mat-meta">36 slides · 8.1 MB</div><button class="mat-download">⬇ Download</button></div>
+      <div class="material-card"><div class="mat-icon" style="background:#ede9fe;">🎯</div><div class="mat-type" style="color:var(--primary);">Template</div><div class="mat-name">Technical Report Template (DOCX)</div><div class="mat-meta">Ready to use · 3 pages</div><button class="mat-download">⬇ Download</button></div>
+      <div class="material-card"><div class="mat-icon" style="background:#fef3c7;">🔬</div><div class="mat-type" style="color:#d97706;">Reading</div><div class="mat-name">Research Methods in CS Documentation</div><div class="mat-meta">Chapter 3–5 · 22 pages</div><button class="mat-download">⬇ Download</button></div>
+      <div class="material-card"><div class="mat-icon" style="background:#dbeafe;">🎤</div><div class="mat-type" style="color:var(--info);">Guide · Presentation</div><div class="mat-name">Oral Presentation Best Practices</div><div class="mat-meta">With checklist · 10 pages</div><button class="mat-download">⬇ Download</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DASHBOARD ============ -->
+<div class="view" id="view-dashboard">
+  <div class="dash-hero">
+    <div class="dash-hero-inner">
+      <div>
+        <div class="dash-welcome">👋 Welcome back, <span id="dashName">User</span>!</div>
+        <div class="dash-subtitle" id="dashSubtitle">Here's what's happening in your course today.</div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">Sign Out →</button>
+    </div>
+  </div>
+  <div class="section">
+    <div class="stats-row" id="statsRow"></div>
+    <div class="tab-bar" id="dashTabBar"></div>
+
+    <!-- Student panes -->
+    <div class="tab-pane" id="pane-my-work"><div id="myWorkContent"></div></div>
+    <div class="tab-pane" id="pane-my-grades"><div id="myGradesContent"></div></div>
+
+    <!-- Teacher panes -->
+    <div class="tab-pane" id="pane-submissions">
+      <div style="margin-bottom:1rem;">
+        <select class="form-select" style="max-width:280px;" id="filterAssign" onchange="renderSubmissions()">
+          <option value="">All Assignments</option>
+        </select>
+      </div>
+      <div class="sub-table">
+        <div class="sub-head">
+          <div>Student</div><div>Assignment</div><div>Submitted</div>
+          <div>Mark</div><div>Save</div><div>Delete</div>
+        </div>
+        <div id="submissionsBody"></div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="pane-gradebook">
+      <div class="grades-wrap">
+        <div class="grades-head" style="grid-template-columns:2fr 1fr 1fr 1fr 1.5fr;">
+          <div>Student</div><div>A1</div><div>A2</div><div>A3</div><div>Average</div>
+        </div>
+        <div id="gradebookBody"></div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="pane-manage">
+      <div class="add-form">
+        <div class="add-form-title">➕ Post New Assignment</div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Title *</label><input type="text" class="form-input" id="newTitle" placeholder="e.g. Technical Report Draft"></div>
+          <div class="form-group"><label class="form-label">Due Date *</label><input type="date" class="form-input" id="newDue"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Description</label><input type="text" class="form-input" id="newDesc" placeholder="Brief description..."></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Points</label><input type="number" class="form-input" id="newPoints" value="30"></div>
+          <div style="display:flex;align-items:flex-end;"><button class="btn-modal" style="margin-top:0;" onclick="addAssignment()">🚀 Post Assignment</button></div>
+        </div>
+      </div>
+      <div class="section-title" style="margin-bottom:1rem;font-size:1.1rem;">📋 Posted Assignments</div>
+      <div id="postedAssignments"></div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
